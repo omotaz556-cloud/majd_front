@@ -17,8 +17,9 @@ import {
   Shield,
   ShieldAlert,
   ChevronDown,
+  Trash2,
 } from 'lucide-react';
-import { listInbox, markMessageAsRead, markAllAsRead } from '../api/inbox';
+import { listInbox, markMessageAsRead, markAllAsRead, deleteMessage } from '../api/inbox';
 import { useInbox } from '../context/InboxContext';
 import { SkeletonRow } from '../components/ui/Loaders';
 import { toastError, toastCoins } from '../components/ui/toast';
@@ -86,7 +87,7 @@ function formatDateTime(iso) {
 // ReportsMailPanel (بانل اللعبة)، عشان الاتنين (صفحة /inbox المستقلة
 // والبانل جوّه المشهد) يعرضوا نفس التقرير بالظبط من نفس مصدر البيانات
 // (رسالة البريد). ======
-function BattleReportMessageCard({ message, expanded, onToggle, onRead }) {
+function BattleReportMessageCard({ message, expanded, onToggle, onRead, onDelete, deletingId }) {
   const meta = battleReportMeta(message.metadata);
   const Icon = meta.icon;
   const sounds = useSound();
@@ -104,27 +105,41 @@ function BattleReportMessageCard({ message, expanded, onToggle, onRead }) {
         message.is_read ? 'border-ink-600 opacity-70' : 'border-gold/30'
       }`}
     >
-      <button
-        type="button"
-        onClick={() => {
-          onRead(message);
-          onToggle(message.id);
-        }}
-        className="flex w-full items-start gap-3 p-4 text-right"
-      >
-        <span className={`mt-0.5 shrink-0 ${meta.className}`}>
-          {message.is_read ? <MailOpen size={18} /> : <Icon size={18} />}
-        </span>
-        <span className="flex-1">
-          <span className="flex items-center gap-2">
-            <span className="font-display font-bold text-bone">{message.title}</span>
-            {!message.is_read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />}
+      <div className="flex items-start gap-1">
+        <button
+          type="button"
+          onClick={() => {
+            onRead(message);
+            onToggle(message.id);
+          }}
+          className="flex flex-1 items-start gap-3 p-4 text-right"
+        >
+          <span className={`mt-0.5 shrink-0 ${meta.className}`}>
+            {message.is_read ? <MailOpen size={18} /> : <Icon size={18} />}
           </span>
-          {message.body && <span className="mt-1 block text-sm text-bone/60">{message.body}</span>}
-          <span className="mt-1.5 block text-xs text-bone/40">{formatDateTime(message.created_at)}</span>
-        </span>
-        <ChevronDown size={16} className={`mt-1 shrink-0 text-bone/40 transition-transform ${expanded ? 'rotate-180' : ''}`} />
-      </button>
+          <span className="flex-1">
+            <span className="flex items-center gap-2">
+              <span className="font-display font-bold text-bone">{message.title}</span>
+              {!message.is_read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />}
+            </span>
+            {message.body && <span className="mt-1 block text-sm text-bone/60">{message.body}</span>}
+            <span className="mt-1.5 block text-xs text-bone/40">{formatDateTime(message.created_at)}</span>
+          </span>
+          <ChevronDown size={16} className={`mt-1 shrink-0 text-bone/40 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+        </button>
+
+        {message.is_read && (
+          <button
+            type="button"
+            onClick={() => onDelete(message)}
+            disabled={deletingId === message.id}
+            title="حذف الرسالة"
+            className="focus-ring mt-4 shrink-0 rounded-lg p-1.5 text-bone/40 hover:bg-alert/10 hover:text-alert disabled:opacity-40"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
+      </div>
 
       {expanded && (
         <div className="border-t border-ink-600 p-4">
@@ -166,6 +181,7 @@ export default function InboxPage() {
   const [err, setErr] = useState(null);
   const [markingAll, setMarkingAll] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const { refresh: refreshUnreadCount } = useInbox();
 
   function load() {
@@ -210,6 +226,24 @@ export default function InboxPage() {
     setExpandedId((prev) => (prev === id ? null : id));
   }
 
+  async function handleDelete(message) {
+    if (deletingId) return; // امنع نداءات متزامنة أثناء وجود عملية حذف شغالة بالفعل
+    setDeletingId(message.id);
+    const previous = messages;
+    // تحديث تفاؤلي: نشيل الرسالة من الواجهة فورًا، ولو الطلب فشل نرجعها تاني
+    setMessages((prev) => prev.filter((m) => m.id !== message.id));
+    if (expandedId === message.id) setExpandedId(null);
+
+    try {
+      await deleteMessage(message.id);
+    } catch {
+      setMessages(previous);
+      toastError('تعذر حذف الرسالة');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const hasUnread = messages.some((m) => !m.is_read);
 
   return (
@@ -247,6 +281,8 @@ export default function InboxPage() {
                   expanded={expandedId === m.id}
                   onToggle={toggleExpanded}
                   onRead={handleOpen}
+                  onDelete={handleDelete}
+                  deletingId={deletingId}
                 />
               );
             }
@@ -285,6 +321,17 @@ export default function InboxPage() {
                     <Swords size={12} />
                     شاهد المعركة
                   </Link>
+                )}
+                {m.is_read && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(m)}
+                    disabled={deletingId === m.id}
+                    title="حذف الرسالة"
+                    className="focus-ring mt-0.5 shrink-0 rounded-lg p-1.5 text-bone/40 hover:bg-alert/10 hover:text-alert disabled:opacity-40"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 )}
               </motion.div>
             );
