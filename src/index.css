@@ -1,0 +1,635 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   نظام الثيم (فاتح/غامق) - هوية "صالة أركيد سعودية": خلفية فاتحة دافئة
+   (كريمي/رملي) هي الافتراضية، بلمسات أخضر (زي علم السعودية) وذهبي بدل
+   البنفسجي الغامق والنيون الفوشيا/السيان الغربي. الوضع الغامق لسه متاح
+   من زرار الثيم لمين يفضله. data-theme بيتحط على <html> من ThemeContext.
+   ========================================================================== */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --ink-950: 255 255 255;
+  --ink-900: 253 249 240;
+  --ink-800: 246 239 224;
+  --ink-700: 235 224 199;
+  --ink-600: 219 203 171;
+  --ink-500: 181 163 130;
+  --bone: 35 28 20;
+
+  --body-bg: 250 246 236;
+  --panel-1: 255 255 255;
+  --panel-2: 250 246 236;
+  --border-soft: 35 28 20;
+  --shimmer-1: 240 232 213;
+  --shimmer-2: 250 246 236;
+  --scrollbar-track: 246 239 224;
+  --scrollbar-thumb: 201 184 148;
+
+  /* ألوان مشهد صالة الأركيد نهارًا - إضاءة مطفأة، أخضر/ذهبي بدل النيون */
+  --scene-hall-1: 235 224 199;
+  --scene-hall-2: 250 246 236;
+  --scene-floor-a: 226 213 182;
+  --scene-floor-b: 240 232 213;
+  --scene-cab-body: 214 197 163;
+  --scene-cab-trim: 190 170 130;
+  --scene-marquee-glow: 0 135 90;
+  --scene-marquee-glow-2: 212 160 23;
+  --scene-star-opacity: 0;
+  --scene-scene-opacity: 0.3;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --ink-950: 12 10 8;
+  --ink-900: 22 18 14;
+  --ink-800: 32 27 20;
+  --ink-700: 44 37 27;
+  --ink-600: 60 50 36;
+  --ink-500: 90 76 55;
+  --bone: 250 242 224;
+
+  --body-bg: 18 15 11;
+  --panel-1: 32 27 20;
+  --panel-2: 18 15 11;
+  --border-soft: 250 242 224;
+  --shimmer-1: 32 27 20;
+  --shimmer-2: 44 37 27;
+  --scrollbar-track: 18 15 11;
+  --scrollbar-thumb: 70 58 42;
+
+  /* نفس المشهد ليلاً - أخضر/ذهبي متوهج بدل الفوشيا/السيان */
+  --scene-hall-1: 26 20 16;
+  --scene-hall-2: 10 8 6;
+  --scene-floor-a: 32 25 19;
+  --scene-floor-b: 16 13 10;
+  --scene-cab-body: 40 32 24;
+  --scene-cab-trim: 62 50 36;
+  --scene-marquee-glow: 0 135 90;
+  --scene-marquee-glow-2: 212 160 23;
+  --scene-star-opacity: 0.5;
+  --scene-scene-opacity: 0.5;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--scrollbar-thumb)) rgb(var(--scrollbar-track));
+}
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  background: rgb(var(--body-bg));
+  position: relative;
+  transition: background-color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid #00875a;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   خامات صالة الأركيد: سكانلاينز شاشة CRT + بلاستيك مصبوب + شريط لمبات
+   مارکيز بتضوي وحدة ورا التانية - دي الطبقة اللي بتحول أي بانل من "شاشة
+   مسطحة" لحاجة حاسس إنها جزء من كابينة أركيد حقيقية بدل PC gaming rig.
+   ========================================================================== */
+
+/* سكانلاينز CRT - خطوط أفقية دقيقة متكررة، إحساس شاشة أنبوبية قديمة */
+.crt-scan {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.16) 0px,
+    rgba(0,0,0,0.16) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  background-color: #150e30;
+}
+[data-theme='light'] .crt-scan {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(30,20,46,0.05) 0px,
+    rgba(30,20,46,0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  background-color: #efe9fa;
+}
+
+/* شريط لمبات مارکيز (زي سينما/كابينة قديمة) - بدل الـ RGB-edge القديم.
+   عبارة عن نقط ضوء متباعدة بتنبض بالتبادل بدل تدرج لوني بيتحرك. */
+.marquee-lights {
+  position: relative;
+  isolation: isolate;
+}
+.marquee-lights::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 6%;
+  left: 6%;
+  height: 3px;
+  background-image: radial-gradient(circle, #d4a017 1.4px, transparent 1.6px);
+  background-size: 18px 3px;
+  background-repeat: repeat-x;
+  animation: marquee-chase 1.3s steps(2) infinite;
+  opacity: 0.9;
+}
+.marquee-lights-bottom::before {
+  top: auto;
+  bottom: 0;
+}
+
+/* إطار بلاستيك مصبوب (بيفل ضوء/ضل) - حواف كابينة أركيد حقيقية */
+.metal-frame {
+  border: 1px solid rgb(var(--border-soft) / 0.12);
+  box-shadow: 0 2px 0 rgba(255,255,255,.08) inset, 0 -2px 0 rgba(0,0,0,.55) inset;
+}
+
+/* لمعة بلاستيك تعدي بسرعة عند الـ hover */
+.glass-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.glass-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transform: translateX(-130%) skewX(-12deg);
+  pointer-events: none;
+}
+.glass-sheen:hover::after {
+  animation: sheen-sweep 1.1s ease-in-out;
+}
+
+/* ==========================================================================
+   Design system utilities
+   Arcade-cabinet direction: solid moulded-plastic panels (not frosted glass),
+   a marquee chase-light top edge instead of a gliding RGB gradient, and a
+   ticket-perforated divider style used for lists. Colors: marquee yellow
+   ("gold" token) is the signature accent for coins/tickets; cyan/magenta are
+   secondary sign colors reserved for emphasis.
+   ========================================================================== */
+
+.glass-panel {
+  background: linear-gradient(175deg, rgb(var(--panel-1) / 0.96), rgb(var(--panel-2) / 0.98));
+  border: 1px solid rgb(var(--border-soft) / 0.1);
+  box-shadow: 0 2px 0 rgb(255 255 255 / 0.06) inset, 0 -2px 0 rgb(0 0 0 / 0.45) inset, 0 14px 34px rgb(5 2 16 / 0.5);
+}
+
+.glass-panel-neon {
+  background: linear-gradient(175deg, rgb(var(--panel-1) / 0.94), rgb(var(--panel-2) / 0.96));
+  border: 1px solid rgba(0, 135, 90, 0.18);
+}
+
+.border-glow-gold {
+  border: 1px solid rgba(212, 160, 23, 0.32);
+  box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.07) inset;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.border-glow-gold:hover {
+  border-color: rgba(212, 160, 23, 0.55);
+  box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.09) inset, 0 0 20px rgba(212, 160, 23, 0.18);
+}
+
+.border-glow-teal {
+  border: 1px solid rgba(0, 135, 90, 0.32);
+  box-shadow: 0 0 0 1px rgba(0, 135, 90, 0.07) inset;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.border-glow-teal:hover {
+  border-color: rgba(0, 135, 90, 0.55);
+  box-shadow: 0 0 0 1px rgba(0, 135, 90, 0.09) inset, 0 0 20px rgba(0, 135, 90, 0.15);
+}
+
+/* الأزرار دلوقتي بتتصرف زي زرار بلاستيك أركيد حقيقي (Coin/Player button):
+   قبة لمعة في النص فوق، حرف سفلي غامق، وبتدوس لتحت فعليًا عند الضغط. */
+.btn-gradient-gold {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: radial-gradient(120% 140% at 50% 15%, #f8e9c2 0%, #d4a017 42%, #a97b0e 100%);
+  color: #2a1c04;
+  font-weight: 800;
+  box-shadow: 0 2px 0 rgba(255,255,255,.55) inset, 0 -4px 0 rgba(0,0,0,.25) inset, 0 6px 16px rgba(212, 160, 23,.28);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+}
+.btn-gradient-gold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  transform: translateX(-130%) skewX(-12deg);
+  pointer-events: none;
+}
+.btn-gradient-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 rgba(255,255,255,.6) inset, 0 -4px 0 rgba(0,0,0,.25) inset, 0 0 16px rgba(212, 160, 23, 0.6), 0 0 40px rgba(212, 160, 23, 0.3);
+  filter: brightness(1.05);
+}
+.btn-gradient-gold:hover::after {
+  animation: sheen-sweep 0.9s ease-in-out;
+}
+.btn-gradient-gold:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 4px rgba(0,0,0,.4) inset;
+}
+
+.btn-gradient-neon {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: radial-gradient(120% 140% at 50% 15%, #e8b6a8 0%, #b5432e 42%, #7a2b1d 100%);
+  color: #2a120a;
+  font-weight: 800;
+  box-shadow: 0 2px 0 rgba(255,255,255,.4) inset, 0 -4px 0 rgba(0,0,0,.3) inset, 0 6px 16px rgba(181, 67, 46,.28);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+}
+.btn-gradient-neon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: translateX(-130%) skewX(-12deg);
+  pointer-events: none;
+}
+.btn-gradient-neon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 rgba(255,255,255,.4) inset, 0 -4px 0 rgba(0,0,0,.3) inset, 0 0 16px rgba(181, 67, 46, 0.55), 0 0 40px rgba(181, 67, 46, 0.28);
+}
+.btn-gradient-neon:hover::after {
+  animation: sheen-sweep 0.9s ease-in-out;
+}
+.btn-gradient-neon:active {
+  transform: translateY(2px);
+}
+
+.btn-gradient-teal {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: radial-gradient(120% 140% at 50% 15%, #d7f2e4 0%, #00875a 42%, #046e49 100%);
+  color: #04241a;
+  font-weight: 800;
+  box-shadow: 0 2px 0 rgba(255,255,255,.45) inset, 0 -4px 0 rgba(0,0,0,.25) inset, 0 6px 16px rgba(0, 135, 90,.28);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+}
+.btn-gradient-teal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: translateX(-130%) skewX(-12deg);
+  pointer-events: none;
+}
+.btn-gradient-teal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 rgba(255,255,255,.45) inset, 0 -4px 0 rgba(0,0,0,.25) inset, 0 0 16px rgba(0, 135, 90, 0.55), 0 0 40px rgba(0, 135, 90, 0.26);
+  filter: brightness(1.05);
+}
+.btn-gradient-teal:hover::after {
+  animation: sheen-sweep 0.9s ease-in-out;
+}
+.btn-gradient-teal:active {
+  transform: translateY(2px);
+}
+.btn-gradient-teal:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-outline {
+  position: relative;
+  border: 2px solid rgba(255, 243, 214, 0.22);
+  color: #fff3d6;
+  font-weight: 700;
+  background: linear-gradient(180deg, rgb(var(--bone) / .07), rgb(var(--bone) / .02));
+  box-shadow: 0 2px 0 rgba(255,255,255,.06) inset;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+.btn-outline:hover {
+  border-color: rgba(212, 160, 23, 0.5);
+  background: rgb(var(--bone) / .1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 rgba(255,255,255,.06) inset, 0 0 16px rgba(212, 160, 23, 0.16);
+}
+.btn-outline:active {
+  transform: translateY(1px);
+}
+
+/* Unified card system - "كابينة أركيد صغيرة": بلاستيك مصمت بدل زجاج مصنفر،
+   وشريط لمبات مارکيز أعلى الكارت بدل تدرج RGB متحرك. */
+.glass-card {
+  position: relative;
+  background: linear-gradient(175deg, rgb(var(--panel-1) / 0.96), rgb(var(--panel-2) / 0.98));
+  border: 1px solid rgb(var(--border-soft) / 0.1);
+  box-shadow: 0 2px 0 rgb(255 255 255 / 0.07) inset, 0 -2px 0 rgb(0 0 0 / 0.45) inset, 0 12px 30px rgb(5 2 16 / 0.5);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.25s ease;
+}
+/* شريط لمبات مارکيز أعلى كل كارت - بتنبض بالتبادل زي سينما قديمة */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 12%;
+  left: 12%;
+  height: 3px;
+  background-image: radial-gradient(circle, #d4a017 1.3px, transparent 1.5px);
+  background-size: 16px 3px;
+  background-repeat: repeat-x;
+  animation: marquee-chase 1.4s steps(2) infinite;
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+.glass-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 160, 23, 0.35);
+  box-shadow: 0 20px 48px rgba(5, 2, 16, 0.55), 0 0 30px rgba(212, 160, 23, 0.16);
+}
+.glass-card-hover:hover::before {
+  opacity: 1;
+}
+
+.shimmer-skeleton {
+  background: linear-gradient(90deg, rgb(var(--shimmer-1)) 0%, rgb(var(--shimmer-2)) 40%, rgb(var(--shimmer-1)) 80%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 18px rgba(212, 160, 23, 0.5);
+}
+
+.page-fade-enter {
+  animation: page-fade 0.28s ease both;
+}
+@keyframes page-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- City Battlefield: Unit Movement Rendering ---------- */
+/* اهتزاز مشي خفيف - بيتفعّل بس طول ما useUnitMotion() شايف إن الوحدة لسه في
+   رحلتها البصرية بين موقعين (isWalking) - عرض بحت، مفيش أي علاقة بمنطق
+   المحاكاة أو حساب موقع. */
+@keyframes unit-walk-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.unit-walking {
+  animation: unit-walk-bob 0.3s ease-in-out infinite;
+}
+
+/* ومضة قصيرة لما "وجهة" وحدة تتحدّث (موقع جديد وصل من المحاكاة) - أنيميشن
+   واحد بيتلاشى لوحده (لا loop ولا state إضافي مطلوب غير destinationJustUpdated
+   بتاعة useUnitMotion). */
+@keyframes destination-ping {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.destination-marker {
+  animation: destination-ping 0.7s ease-out;
+}
+
+/* ---------- City Battlefield: Combat Rendering ---------- */
+/* مدد الأنيميشن هنا لازم تتطابق مع EFFECT_DURATION_MS في
+   components/battlefield/combatEvents.js (نفس فلسفة WALK_TRANSITION_MS/
+   unit-walk-bob فوق) - useCombatEffects بيستخدم نفس الأرقام دي عشان يعرف
+   إمتى يشيل التأثير من الشاشة. */
+
+/* هجوم قريب - ومضة سلاح صغيرة (المسافة/الاتجاه بيتحسبوا في EffectLayer.jsx
+   نفسه، الأنيميشن هنا بس scale/opacity). */
+@keyframes combat-melee-swing {
+  0% { opacity: 0; transform: scale(0.4); }
+  40% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1); }
+}
+.combat-melee-swing {
+  display: inline-flex;
+  font-size: 18px;
+  line-height: 1;
+  animation: combat-melee-swing 0.3s ease-out both;
+}
+
+/* هجوم مدى - مقذوف بيتحرك فعليًا بين موقع المهاجم وموقع الهدف (نسبة مئوية
+   حقيقية جايه من toScenePercent، مش قيم وهمية) عن طريق CSS custom
+   properties محقونة inline لكل تأثير. */
+.combat-ranged-projectile {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  transform: translate(-50%, -50%);
+  animation: combat-ranged-shot 0.35s linear forwards;
+}
+@keyframes combat-ranged-shot {
+  from { left: var(--from-left); top: var(--from-top); opacity: 1; }
+  to { left: var(--to-left); top: var(--to-top); opacity: 0.6; }
+}
+
+/* أثر الضربة (Hit Effect) - ومضة اصطدام محايدة عند موقع الهدف. */
+.combat-impact-spark {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  animation: combat-impact-spark 0.35s ease-out both;
+}
+@keyframes combat-impact-spark {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+}
+
+/* رقم الضرر - بيطفو فوق الهدف ويتلاشى. */
+.combat-damage-number {
+  transform: translate(-50%, -80%);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  animation: combat-damage-number 0.9s ease-out both;
+}
+@keyframes combat-damage-number {
+  0% { opacity: 0; transform: translate(-50%, -80%); }
+  15% { opacity: 1; transform: translate(-50%, -110%); }
+  100% { opacity: 0; transform: translate(-50%, -180%); }
+}
+
+/* أنيميشن الموت - حلقة بتتوسّع وتتلاشى عند آخر موقع معروف للوحدة اللي ماتت. */
+.combat-death-burst {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  animation: combat-death-burst 0.7s ease-out both;
+}
+@keyframes combat-death-burst {
+  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.3); }
+  60% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.6); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
+}
+
+/* ---------- City Battlefield: Battle Polish (camera + result screens) ---------- */
+/* اهتزاز الكاميرا - بيتفعّل بس لحظة حدث قتالي "كبير" (تدمير مبنى/هزيمة قائد -
+   راجع useCameraShake.js SHAKE_EVENT_TYPES). مدة الأنيميشن هنا لازم تتطابق مع
+   SHAKE_DURATION_MS هناك، نفس فلسفة WALK_TRANSITION_MS/unit-walk-bob. */
+@keyframes camera-shake {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1.5%, 1%); }
+  25% { transform: translate(1.8%, -1.2%); }
+  40% { transform: translate(-1.2%, -1%); }
+  55% { transform: translate(1.4%, 1.3%); }
+  70% { transform: translate(-0.8%, 0.6%); }
+  85% { transform: translate(0.5%, -0.4%); }
+  100% { transform: translate(0, 0); }
+}
+.camera-shake {
+  animation: camera-shake 420ms ease-in-out;
+}
+
+/* شاشة النصر/الهزيمة - ظهور بسيط من تحت لفوق مع تلاشي، نفس منطق page-fade
+   بس أبطأ شوية عشان تحس إنها "لحظة" مش انتقال صفحة عادي. */
+@keyframes result-screen-in {
+  0% { opacity: 0; transform: translateY(14px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.result-screen-in {
+  animation: result-screen-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---------- Editorial / storefront helpers ---------- */
+
+/* شارة صغيرة فوق العناوين تقول للسكشن ده "إيه هو" - زي لافتة صالة الأركيد،
+   مش بس ديكور. */
+.eyebrow {
+  font-family: 'VT323', monospace;
+  font-size: 0.85rem;
+  letter-spacing: .16em;
+  color: #d4a017;
+  text-transform: uppercase;
+}
+
+.section-heading {
+  font-family: 'Lalezar', cursive;
+  font-weight: 400;
+  color: rgb(var(--bone));
+  letter-spacing: 0.01em;
+}
+
+/* رف أفقي (شرايح ألعاب) مع تلاشي حواف ناعم + سناب سكرول */
+.shelf-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.5rem;
+  -ms-overflow-style: none;
+}
+.shelf-scroll > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+.shelf-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.shelf-scroll::-webkit-scrollbar-thumb {
+  background: #3c2d70;
+  border-radius: 999px;
+}
+
+/* شكل "تذكرة أركيد" - حدود متقطعة زي كوبون فعلي بدل حبة زجاجية مسطحة. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 6px;
+  border: 1px dashed rgb(var(--border-soft) / 0.25);
+  background: rgb(var(--border-soft) / 0.06);
+  box-shadow: 0 2px 0 rgba(255,255,255,.06) inset;
+  padding: 0.35rem 0.75rem;
+  font-family: 'VT323', monospace;
+  font-size: 0.95rem;
+  color: rgb(var(--bone) / 0.75);
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.chip:hover {
+  border-color: rgba(212, 160, 23, 0.5);
+  color: #d4a017;
+  background: rgba(212, 160, 23, 0.08);
+  box-shadow: 0 2px 0 rgba(255,255,255,.06) inset, 0 0 12px rgba(212, 160, 23,.18);
+}
+
+/* لمبة LED صغيرة بتنبض زي مؤشر "INSERT COIN" على كابينة حقيقية */
+.led-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
+  animation: led-blink 1.8s ease-in-out infinite;
+}
+
+/* غلاف البانر الرئيسي - تعتيم من تحت لضمان وضوح العنوان/الـCTA فوق أي
+   عمل فني تحته. */
+.hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(10,6,24,0.97) 0%, rgba(10,6,24,0.78) 42%, rgba(10,6,24,0.18) 75%, rgba(10,6,24,0.06) 100%),
+    linear-gradient(0deg, rgba(10,6,24,0.98) 0%, rgba(10,6,24,0.2) 45%, rgba(10,6,24,0) 65%);
+}
+
+.noise-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ---------- خلفية ثابتة (صورة لاعبين + كنترولر) لكل صفحات الموقع ---------- */
+.gaming-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+  background: rgb(var(--body-bg));
+}
+
+.gaming-bg__image {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/bg-arcade.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+
+.gaming-bg__fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(var(--body-bg) / 0.2) 0%, rgb(var(--body-bg) / 0.15) 40%, rgb(var(--body-bg) / 0.35) 75%, rgb(var(--body-bg)) 100%);
+}
+
+#root > * {
+  position: relative;
+  z-index: 1;
+}

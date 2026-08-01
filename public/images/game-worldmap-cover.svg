@@ -1,0 +1,134 @@
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="خريطة العالم - لعبة استراتيجية بقلعة وسط أراضي مفتوحة تحت سماء ليلية">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#120c1f" />
+      <stop offset="55%" stop-color="#241a2e" />
+      <stop offset="100%" stop-color="#3a2a24" />
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e5f2a" />
+      <stop offset="100%" stop-color="#1c3b1c" />
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffe9a8" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#ffe9a8" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="roofBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a6ea8" />
+      <stop offset="100%" stop-color="#1c3c5c" />
+    </linearGradient>
+    <linearGradient id="roofRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c23b3b" />
+      <stop offset="100%" stop-color="#7a1f1f" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="480" height="270" fill="url(#sky)" />
+
+  <circle cx="392" cy="52" r="30" fill="url(#moonGlow)" />
+  <circle cx="392" cy="52" r="15" fill="#f5e7bd" />
+
+  <g opacity="0.8">
+    <circle cx="60" cy="34" r="1.1" fill="#ffffff" />
+    <circle cx="120" cy="20" r="1" fill="#ffffff" />
+    <circle cx="180" cy="46" r="1.2" fill="#ffffff" />
+    <circle cx="240" cy="24" r="1" fill="#ffffff" />
+    <circle cx="300" cy="40" r="1.1" fill="#ffffff" />
+    <circle cx="330" cy="18" r="1" fill="#ffffff" />
+    <circle cx="90" cy="60" r="0.9" fill="#ffffff" />
+    <circle cx="210" cy="14" r="0.9" fill="#ffffff" />
+  </g>
+
+  <path d="M0,150 L480,150 L480,270 L0,270 Z" fill="url(#ground)" />
+  <path d="M0,150 Q240,132 480,150 L480,160 Q240,142 0,160 Z" fill="#274d24" />
+
+  <g opacity="0.5">
+    <ellipse cx="70" cy="220" rx="46" ry="10" fill="#16300f" />
+    <ellipse cx="330" cy="235" rx="60" ry="12" fill="#16300f" />
+    <ellipse cx="430" cy="190" rx="34" ry="8" fill="#16300f" />
+  </g>
+
+  <g transform="translate(70,205)">
+    <path d="M0,0 Q10,-16 22,0 Q30,-10 40,0 Q30,6 20,4 Q10,7 0,0 Z" fill="#3a7a34" />
+  </g>
+  <g transform="translate(400,150)">
+    <path d="M0,0 Q10,-16 22,0 Q30,-10 40,0 Q30,6 20,4 Q10,7 0,0 Z" fill="#3a7a34" />
+  </g>
+
+  <g transform="translate(240,205)">
+    <ellipse cx="0" cy="16" rx="118" ry="20" fill="#0d1a06" opacity="0.35" />
+
+    <polygon points="0,-96 100,-46 0,4 -100,-46" fill="#dfe3e7" />
+    <polygon points="-100,-46 0,4 0,26 -100,-24" fill="#8f959c" />
+    <polygon points="100,-46 0,4 0,26 100,-24" fill="#b7bcc2" />
+
+    <g>
+      <polygon points="-62,-78 -62,-32 -86,-44 -86,-90" fill="#a7acb3" />
+      <polygon points="-62,-78 -62,-32 -38,-44 -38,-90" fill="#c7cbd0" />
+      <polygon points="-86,-90 -62,-78 -38,-90 -62,-102" fill="#e6e9eb" />
+      <polygon points="-86,-90 -62,-102 -62,-120 -86,-108" fill="url(#roofBlue)" />
+      <polygon points="-38,-90 -62,-102 -62,-120 -38,-108" fill="url(#roofBlue)" />
+      <rect x="-64" y="-134" width="4" height="16" fill="#5c6167" />
+    </g>
+
+    <g>
+      <polygon points="62,-78 62,-32 38,-44 38,-90" fill="#a7acb3" />
+      <polygon points="62,-78 62,-32 86,-44 86,-90" fill="#c7cbd0" />
+      <polygon points="38,-90 62,-78 86,-90 62,-102" fill="#e6e9eb" />
+      <polygon points="38,-90 62,-102 62,-120 38,-108" fill="url(#roofBlue)" />
+      <polygon points="86,-90 62,-102 62,-120 86,-108" fill="url(#roofBlue)" />
+      <rect x="60" y="-134" width="4" height="16" fill="#5c6167" />
+    </g>
+
+    <g>
+      <rect x="-26" y="-92" width="52" height="60" fill="#c7cbd0" />
+      <rect x="-26" y="-92" width="20" height="60" fill="#a7acb3" />
+      <polygon points="-32,-92 32,-92 0,-138" fill="url(#roofRed)" stroke="#4a1414" stroke-width="1" />
+      <rect x="-2" y="-152" width="4" height="16" fill="#5c6167" />
+      <polygon points="0,-166 17,-160 0,-154" fill="#c23b3b" />
+    </g>
+
+    <path d="M-11,-32 v-22 a11,11 0 0 1 22,0 v22 z" fill="#2a1c10" />
+    <circle cx="-40" cy="-56" r="3.6" fill="#ffe9a8" opacity="0.95" />
+    <circle cx="40" cy="-56" r="3.6" fill="#ffe9a8" opacity="0.95" />
+    <circle cx="0" cy="-70" r="3.2" fill="#ffe9a8" opacity="0.95" />
+
+    <g stroke="#7d838a" stroke-width="0.8">
+      <rect x="-90" y="-96" width="9" height="7" fill="#c7cbd0" />
+      <rect x="-72" y="-96" width="9" height="7" fill="#c7cbd0" />
+      <rect x="63" y="-96" width="9" height="7" fill="#c7cbd0" />
+      <rect x="81" y="-96" width="9" height="7" fill="#c7cbd0" />
+    </g>
+
+    <g transform="translate(-150,10)" opacity="0.95">
+      <ellipse cx="0" cy="6" rx="34" ry="7" fill="#0d1a06" opacity="0.3" />
+      <polygon points="0,-40 30,-18 0,4 -30,-18" fill="#a3793f" />
+      <polygon points="-30,-18 0,4 0,20 -30,-4" fill="#5a4326" />
+      <polygon points="30,-18 0,4 0,20 30,-4" fill="#7c5c34" />
+      <polygon points="-14,-18 14,-18 0,-42" fill="url(#roofRed)" stroke="#3a2a18" stroke-width="0.8" />
+    </g>
+
+    <g transform="translate(150,4)" opacity="0.95">
+      <ellipse cx="0" cy="6" rx="30" ry="6" fill="#0d1a06" opacity="0.3" />
+      <polygon points="0,-34 26,-15 0,4 -26,-15" fill="#8a8f96" />
+      <polygon points="-26,-15 0,4 0,18 -26,-1" fill="#5c6672" />
+      <polygon points="26,-15 0,4 0,18 26,-1" fill="#7c8894" />
+      <ellipse cx="0" cy="-18" rx="10" ry="5" fill="#241d16" />
+    </g>
+  </g>
+
+  <g transform="translate(150,150)">
+    <rect x="-2" y="-30" width="4" height="30" fill="#5a4326" />
+    <polygon points="-2,-30 -2,-46 26,-32 2,-24" fill="#c23b3b" />
+    <polygon points="-2,-30 -2,-46 -30,-32 -2,-24" fill="#8a1f1f" />
+  </g>
+  <g transform="translate(345,158)">
+    <rect x="-1.5" y="-24" width="3" height="24" fill="#5a4326" />
+    <polygon points="-1.5,-24 -1.5,-36 20,-25 1.5,-19" fill="#3a6ea8" />
+    <polygon points="-1.5,-24 -1.5,-36 -23,-25 -1.5,-19" fill="#1c3c5c" />
+  </g>
+
+  <g opacity="0.9">
+    <ellipse cx="240" cy="255" rx="240" ry="16" fill="#120c1f" opacity="0.5" />
+  </g>
+</svg>
