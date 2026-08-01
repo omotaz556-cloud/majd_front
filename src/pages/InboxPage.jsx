@@ -19,7 +19,7 @@ import {
   ChevronDown,
   Trash2,
 } from 'lucide-react';
-import { listInbox, markMessageAsRead, markAllAsRead, deleteMessage } from '../api/inbox';
+import { listInbox, markMessageAsRead, markAllAsRead, deleteMessage, deleteAllRead } from '../api/inbox';
 import { useInbox } from '../context/InboxContext';
 import { SkeletonRow } from '../components/ui/Loaders';
 import { toastError, toastCoins } from '../components/ui/toast';
@@ -182,6 +182,7 @@ export default function InboxPage() {
   const [markingAll, setMarkingAll] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deletingAllRead, setDeletingAllRead] = useState(false);
   const { refresh: refreshUnreadCount } = useInbox();
 
   function load() {
@@ -244,7 +245,30 @@ export default function InboxPage() {
     }
   }
 
+  async function handleDeleteAllRead() {
+    if (deletingAllRead) return;
+    const readMessageIds = new Set(messages.filter((m) => m.is_read).map((m) => m.id));
+    if (readMessageIds.size === 0) return;
+    if (!window.confirm('متأكد إنك عايز تحذف كل الرسائل المقروءة؟')) return;
+
+    setDeletingAllRead(true);
+    const previous = messages;
+    // تحديث تفاؤلي: نشيل كل الرسائل المقروءة من الواجهة فورًا، ولو الطلب فشل نرجعها تاني
+    setMessages((prev) => prev.filter((m) => !readMessageIds.has(m.id)));
+    if (expandedId && readMessageIds.has(expandedId)) setExpandedId(null);
+
+    try {
+      await deleteAllRead();
+    } catch {
+      setMessages(previous);
+      toastError('تعذر حذف الرسائل المقروءة');
+    } finally {
+      setDeletingAllRead(false);
+    }
+  }
+
   const hasUnread = messages.some((m) => !m.is_read);
+  const hasRead = messages.some((m) => m.is_read);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -253,16 +277,28 @@ export default function InboxPage() {
           <Mail className="text-gold" size={26} />
           صندوق الوارد
         </h1>
-        {hasUnread && (
-          <button
-            onClick={handleMarkAllRead}
-            disabled={markingAll}
-            className="focus-ring flex items-center gap-1.5 rounded-lg border border-ink-600 px-3 py-1.5 text-sm text-bone/70 hover:border-gold hover:text-gold disabled:opacity-40"
-          >
-            <CheckCheck size={14} />
-            {markingAll ? 'جاري التعليم...' : 'تعليم الكل كمقروء'}
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {hasUnread && (
+            <button
+              onClick={handleMarkAllRead}
+              disabled={markingAll}
+              className="focus-ring flex items-center gap-1.5 rounded-lg border border-ink-600 px-3 py-1.5 text-sm text-bone/70 hover:border-gold hover:text-gold disabled:opacity-40"
+            >
+              <CheckCheck size={14} />
+              {markingAll ? 'جاري التعليم...' : 'تعليم الكل كمقروء'}
+            </button>
+          )}
+          {hasRead && (
+            <button
+              onClick={handleDeleteAllRead}
+              disabled={deletingAllRead}
+              className="focus-ring flex items-center gap-1.5 rounded-lg border border-ink-600 px-3 py-1.5 text-sm text-bone/70 hover:border-alert hover:text-alert disabled:opacity-40"
+            >
+              <Trash2 size={14} />
+              {deletingAllRead ? 'جاري الحذف...' : 'حذف كل المقروء'}
+            </button>
+          )}
+        </div>
       </div>
       <p className="mt-2 text-bone/60">إشعارات قلعتك، تقارير معاركك، وأي إعلانات عامة من فريق مجد</p>
 

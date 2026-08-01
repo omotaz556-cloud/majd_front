@@ -25,6 +25,11 @@ export async function deleteMessage(messageId) {
   return data;
 }
 
+export async function deleteAllRead() {
+  const { data } = await client.delete('/inbox/delete-read');
+  return data; // { deleted }
+}
+
 // ====== رسالة خاصة من لاعب لتاني (Message Player) - وقت زيارة مملكته ======
 export async function sendPrivateMessage(recipientId, body) {
   const { data } = await client.post('/inbox/message', { recipient_id: recipientId, body });
